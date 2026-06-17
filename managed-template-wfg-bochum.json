@@ -168,7 +168,7 @@
               ],
               "sku": {
                 "name": "DataZoneStandard",
-                "capacity": 300
+                "capacity": 50
               },
               "properties": {
                 "model": {
@@ -177,7 +177,7 @@
                   "version": "2026-03-05"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 300
+                "currentCapacity": 50
               }
             },
             {
@@ -190,7 +190,7 @@
               ],
               "sku": {
                 "name": "DataZoneStandard",
-                "capacity": 300
+                "capacity": 50
               },
               "properties": {
                 "model": {
@@ -199,7 +199,7 @@
                   "version": "2025-08-07"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 300
+                "currentCapacity": 50
               }
             },
             {
@@ -212,7 +212,7 @@
               ],
               "sku": {
                 "name": "DataZoneStandard",
-                "capacity": 3
+                "capacity": 1
               },
               "properties": {
                 "model": {
@@ -221,7 +221,7 @@
                   "version": "2025-12-16"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 3
+                "currentCapacity": 1
               }
             },
             {
@@ -234,7 +234,7 @@
               ],
               "sku": {
                 "name": "DataZoneStandard",
-                "capacity": 1000
+                "capacity": 100
               },
               "properties": {
                 "model": {
@@ -243,7 +243,7 @@
                   "version": "1"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 1000
+                "currentCapacity": 100
               }
             },
             {
