@@ -119,8 +119,7 @@
             }
           },
           "variables": {
-            "accountName": "[concat(parameters('customerName'), '-ai-', parameters('regionName'))]",
-            "projectName": "[concat(parameters('customerName'), '-proj')]"
+            "accountName": "[concat(parameters('customerName'), '-ai-', parameters('regionName'))]"
           },
           "resources": [
             {
@@ -246,21 +245,6 @@
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
                 "currentCapacity": 100
               }
-            },
-            {
-              "type": "Microsoft.CognitiveServices/accounts/projects",
-              "apiVersion": "2025-12-01",
-              "name": "[concat(variables('accountName'), '/', variables('projectName'))]",
-              "location": "[parameters('regionName')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'text-embedding-3-large')]"
-              ],
-              "kind": "AIServices",
-              "identity": {
-                "type": "SystemAssigned"
-              },
-              "properties": {}
             }
           ]
         }
