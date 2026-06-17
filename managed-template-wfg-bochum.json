@@ -3,14 +3,15 @@
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": "AWEOS",
-    "beschreibung": "Multi-Region KI-Infrastruktur (Azure Lighthouse + AIServices) fuer KI-Portal-Kunden. Regionen gleichwertig, kein Failover-Konzept auf Azure-Ebene (Routing/Ausfallsicherheit uebernimmt LiteLLM). Skalierbar ueber den 'regions'-Parameter.",
+    "beschreibung": "KI-Infrastruktur (Azure Lighthouse + AIServices) fuer WFG Bochum (KI-Portal). Regionen Schweden und Polen gleichwertig, kein Failover auf Azure-Ebene (Routing/Ausfallsicherheit uebernimmt LiteLLM).",
     "modellSetHinweis": "capacity = Tier-1-Standardquota fuer Data Zone Standard (gpt-5.4: 300, gpt-5-mini: 300, text-embedding-3-large: 1000 in 1000-TPM-Einheiten; gpt-image-1.5: 3 RPM). Tier 1 ist der Einstiegs-Tier neuer Subscriptions. Bei abweichendem Tier oder geteilter EU-DataZone-Quota anpassen."
   },
   "parameters": {
     "customerName": {
       "type": "string",
+      "defaultValue": "wfg-bochum",
       "metadata": {
-        "description": "Kundenkurzname, Kleinbuchstaben ohne Umlaute/Leerzeichen (z.B. 'wfg'). Bildet die Ressourcennamen."
+        "description": "Kundenkurzname, Kleinbuchstaben ohne Umlaute/Leerzeichen. Bildet die Ressourcennamen und die global eindeutige Endpoint-Subdomain."
       }
     },
     "regions": {
