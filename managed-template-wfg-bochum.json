@@ -95,6 +95,9 @@
         "[resourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]"
       ],
       "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
         "mode": "Incremental",
         "parameters": {
           "customerName": {
