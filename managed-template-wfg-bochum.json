@@ -177,8 +177,7 @@
                   "version": "2026-03-05"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 300,
-                "raiPolicyName": "Microsoft.DefaultV2"
+                "currentCapacity": 300
               }
             },
             {
@@ -200,8 +199,7 @@
                   "version": "2025-08-07"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 300,
-                "raiPolicyName": "Microsoft.DefaultV2"
+                "currentCapacity": 300
               }
             },
             {
@@ -223,8 +221,7 @@
                   "version": "2025-12-16"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 3,
-                "raiPolicyName": "Microsoft.DefaultV2"
+                "currentCapacity": 3
               }
             },
             {
@@ -246,8 +243,7 @@
                   "version": "1"
                 },
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 1000,
-                "raiPolicyName": "Microsoft.DefaultV2"
+                "currentCapacity": 1000
               }
             },
             {
