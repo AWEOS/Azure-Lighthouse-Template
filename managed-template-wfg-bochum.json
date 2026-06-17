@@ -164,7 +164,8 @@
               "apiVersion": "2025-12-01",
               "name": "[concat(variables('accountName'), '/gpt-5.4')]",
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/defenderForAISettings', variables('accountName'), 'Default')]"
               ],
               "sku": {
                 "name": "DataZoneStandard",
@@ -252,7 +253,8 @@
               "name": "[concat(variables('accountName'), '/', variables('projectName'))]",
               "location": "[parameters('regionName')]",
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'text-embedding-3-large')]"
               ],
               "kind": "AIServices",
               "identity": {
