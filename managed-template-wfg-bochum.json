@@ -160,110 +160,11 @@
               }
             },
             {
-              "type": "Microsoft.CognitiveServices/accounts/raiPolicies",
-              "apiVersion": "2025-12-01",
-              "name": "[concat(variables('accountName'), '/Microsoft.DefaultV2')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]"
-              ],
-              "properties": {
-                "mode": "Blocking",
-                "contentFilters": [
-                  {
-                    "name": "Hate",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Prompt",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Hate",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Sexual",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Prompt",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Sexual",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Violence",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Prompt",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Violence",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Selfharm",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Prompt",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Selfharm",
-                    "severityThreshold": "Medium",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Jailbreak",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Prompt",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Protected Material Text",
-                    "blocking": true,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  },
-                  {
-                    "name": "Protected Material Code",
-                    "blocking": false,
-                    "enabled": true,
-                    "source": "Completion",
-                    "action": "NONE"
-                  }
-                ]
-              }
-            },
-            {
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2025-12-01",
               "name": "[concat(variables('accountName'), '/gpt-5.4')]",
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/raiPolicies', variables('accountName'), 'Microsoft.DefaultV2')]"
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]"
               ],
               "sku": {
                 "name": "DataZoneStandard",
@@ -286,7 +187,6 @@
               "name": "[concat(variables('accountName'), '/gpt-5-mini')]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/raiPolicies', variables('accountName'), 'Microsoft.DefaultV2')]",
                 "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5.4')]"
               ],
               "sku": {
@@ -310,7 +210,6 @@
               "name": "[concat(variables('accountName'), '/gpt-image-1.5')]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/raiPolicies', variables('accountName'), 'Microsoft.DefaultV2')]",
                 "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5-mini')]"
               ],
               "sku": {
@@ -334,7 +233,6 @@
               "name": "[concat(variables('accountName'), '/text-embedding-3-large')]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/raiPolicies', variables('accountName'), 'Microsoft.DefaultV2')]",
                 "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-image-1.5')]"
               ],
               "sku": {
