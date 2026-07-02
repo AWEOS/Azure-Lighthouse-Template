@@ -11,7 +11,7 @@
   "parameters": {
     "customerName": {
       "type": "string",
-      "defaultValue": "stadtkoeln",
+      "defaultValue": "onlineredaktionstadtkoeln",
       "metadata": {
         "description": "Kundenkurzname, Kleinbuchstaben ohne Umlaute/Leerzeichen. Bildet die Ressourcennamen und die global eindeutige Endpoint-Subdomain."
       }
@@ -163,32 +163,10 @@
             {
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2025-12-01",
-              "name": "[concat(variables('accountName'), '/gpt-5.4')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/defenderForAISettings', variables('accountName'), 'Default')]"
-              ],
-              "sku": {
-                "name": "DataZoneStandard",
-                "capacity": 50
-              },
-              "properties": {
-                "model": {
-                  "format": "OpenAI",
-                  "name": "gpt-5.4",
-                  "version": "2026-03-05"
-                },
-                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-                "currentCapacity": 50
-              }
-            },
-            {
-              "type": "Microsoft.CognitiveServices/accounts/deployments",
-              "apiVersion": "2025-12-01",
               "name": "[concat(variables('accountName'), '/gpt-5.4-mini')]",
               "dependsOn": [
                 "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
-                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5.4')]"
+                "[resourceId('Microsoft.CognitiveServices/accounts/defenderForAISettings', variables('accountName'), 'Default')]"
               ],
               "sku": {
                 "name": "DataZoneStandard",
@@ -297,7 +275,7 @@
     },
     "deployedModels": {
       "type": "string",
-      "value": "gpt-5.4, gpt-5.4-mini, gpt-5.4-nano, gpt-image-1.5, text-embedding-3-large"
+      "value": "gpt-5.4-mini, gpt-5.4-nano, gpt-image-1.5, text-embedding-3-large"
     }
   }
 }
