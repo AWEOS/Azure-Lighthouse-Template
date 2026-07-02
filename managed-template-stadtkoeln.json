@@ -1,0 +1,303 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": "AWEOS",
+    "beschreibung": "KI-Infrastruktur (Azure Lighthouse + AIServices) für Stadt Köln (KI-Portal nero.koeln). Regionen Schweden und Polen gleichwertig, kein Failover auf Azure-Ebene (Routing/Ausfallsicherheit übernimmt LiteLLM).",
+    "modellSet": "Aus Onboarding-Fragebogen 01.07.2026: gpt-5.4-nano, gpt-5.4-mini, gpt-5.4, gpt-image-1.5, text-embedding-3-large. Modellversionen verifiziert gegen Microsoft-Modellreferenz (learn.microsoft.com, models-sold-directly-by-azure, Stand 02.07.2026): gpt-5.4 = 2026-03-05, gpt-5.4-mini/-nano = 2026-03-17.",
+    "capacityHinweis": "capacity in 1000-TPM-Einheiten (gpt-image-1.5: RPM), konservativ unterhalb der Tier-1-Standardquota gesetzt (Muster wfg-bochum). Bei abweichendem Quota-Tier oder geteilter EU-DataZone-Quota anpassen.",
+    "pruefpunkt": "DataZoneStandard-Verfügbarkeit von gpt-5.4-mini/-nano in swedencentral/polandcentral vor bzw. beim Deploy verifizieren — EU-Data-Zone-Rollout der mini/nano-Varianten lief laut Microsoft ab 03/2026 (für gpt-5.4 durch WFG-Deploy 06/2026 praktisch bestätigt)."
+  },
+  "parameters": {
+    "customerName": {
+      "type": "string",
+      "defaultValue": "stadtkoeln",
+      "metadata": {
+        "description": "Kundenkurzname, Kleinbuchstaben ohne Umlaute/Leerzeichen. Bildet die Ressourcennamen und die global eindeutige Endpoint-Subdomain."
+      }
+    },
+    "regions": {
+      "type": "array",
+      "defaultValue": [
+        "swedencentral",
+        "polandcentral"
+      ],
+      "metadata": {
+        "description": "Gleichwertige Azure-Regionen für die AIServices-Accounts. Erweiterbar; jede Region erzeugt einen eigenen Account <kunde>-ai-<region> mit identischem Modell-Set."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "germanywestcentral",
+      "metadata": {
+        "description": "Region für die Resource-Group und die Bereitstellungs-Metadaten/Logs (keine Inferenzdaten). Bewusst eine DE-Region."
+      }
+    }
+  },
+  "variables": {
+    "managedByTenantId": "427cd055-9da8-43d4-9c0d-3e06c5197bda",
+    "resourceGroupName": "[concat('aweos-managed-', parameters('customerName'))]",
+    "authorizations": [
+      {
+        "principalId": "461084a0-466c-47ad-b361-0d1e0836e852",
+        "principalIdDisplayName": "AWEOS-Lighthouse-Admins",
+        "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c"
+      },
+      {
+        "principalId": "461084a0-466c-47ad-b361-0d1e0836e852",
+        "principalIdDisplayName": "AWEOS-Lighthouse-Admins",
+        "roleDefinitionId": "43d0d8ad-25c7-4714-9337-8ba259a9fe05"
+      },
+      {
+        "principalId": "461084a0-466c-47ad-b361-0d1e0836e852",
+        "principalIdDisplayName": "AWEOS-Lighthouse-Admins",
+        "roleDefinitionId": "72fafb9e-0641-4937-9268-a91bfd8191a3"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedServices/registrationDefinitions",
+      "apiVersion": "2022-10-01",
+      "name": "[guid(variables('managedByTenantId'), subscription().subscriptionId)]",
+      "properties": {
+        "registrationDefinitionName": "[concat('AWEOS Managed Services - ', parameters('customerName'))]",
+        "description": "AWEOS verwaltet Ihre Azure-KI-Infrastruktur: Modelle, Monitoring und Kostenoptimierung.",
+        "managedByTenantId": "[variables('managedByTenantId')]",
+        "authorizations": "[variables('authorizations')]"
+      }
+    },
+    {
+      "type": "Microsoft.ManagedServices/registrationAssignments",
+      "apiVersion": "2022-10-01",
+      "name": "[guid(variables('managedByTenantId'), subscription().subscriptionId, 'assignment')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedServices/registrationDefinitions', guid(variables('managedByTenantId'), subscription().subscriptionId))]"
+      ],
+      "properties": {
+        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions', guid(variables('managedByTenantId'), subscription().subscriptionId))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('resourceGroupName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[concat('ai-region-', parameters('regions')[copyIndex()])]",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "copy": {
+        "name": "regionLoop",
+        "count": "[length(parameters('regions'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupName'))]"
+      ],
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "customerName": {
+            "value": "[parameters('customerName')]"
+          },
+          "regionName": {
+            "value": "[parameters('regions')[copyIndex()]]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "customerName": {
+              "type": "string"
+            },
+            "regionName": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "accountName": "[concat(parameters('customerName'), '-ai-', parameters('regionName'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2025-12-01",
+              "name": "[variables('accountName')]",
+              "location": "[parameters('regionName')]",
+              "sku": {
+                "name": "S0"
+              },
+              "kind": "AIServices",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "apiProperties": {},
+                "customSubDomainName": "[variables('accountName')]",
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "virtualNetworkRules": [],
+                  "ipRules": []
+                },
+                "allowProjectManagement": true,
+                "publicNetworkAccess": "Enabled",
+                "disableLocalAuth": false
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/defenderForAISettings",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/Default')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]"
+              ],
+              "properties": {
+                "state": "Disabled"
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/gpt-5.4')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/defenderForAISettings', variables('accountName'), 'Default')]"
+              ],
+              "sku": {
+                "name": "DataZoneStandard",
+                "capacity": 50
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "gpt-5.4",
+                  "version": "2026-03-05"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "currentCapacity": 50
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/gpt-5.4-mini')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5.4')]"
+              ],
+              "sku": {
+                "name": "DataZoneStandard",
+                "capacity": 50
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "gpt-5.4-mini",
+                  "version": "2026-03-17"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "currentCapacity": 50
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/gpt-5.4-nano')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5.4-mini')]"
+              ],
+              "sku": {
+                "name": "DataZoneStandard",
+                "capacity": 50
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "gpt-5.4-nano",
+                  "version": "2026-03-17"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "currentCapacity": 50
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/gpt-image-1.5')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-5.4-nano')]"
+              ],
+              "sku": {
+                "name": "DataZoneStandard",
+                "capacity": 1
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "gpt-image-1.5",
+                  "version": "2025-12-16"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "currentCapacity": 1
+              }
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts/deployments",
+              "apiVersion": "2025-12-01",
+              "name": "[concat(variables('accountName'), '/text-embedding-3-large')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('accountName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', variables('accountName'), 'gpt-image-1.5')]"
+              ],
+              "sku": {
+                "name": "DataZoneStandard",
+                "capacity": 100
+              },
+              "properties": {
+                "model": {
+                  "format": "OpenAI",
+                  "name": "text-embedding-3-large",
+                  "version": "1"
+                },
+                "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
+                "currentCapacity": 100
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "lighthouseStatus": {
+      "type": "string",
+      "value": "[concat('AWEOS Lighthouse-Delegation aktiv (', string(length(parameters('regions'))), ' gleichwertige Regionen)')]"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[variables('resourceGroupName')]"
+    },
+    "regions": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('regions'))]",
+        "input": {
+          "region": "[parameters('regions')[copyIndex()]]",
+          "accountName": "[concat(parameters('customerName'), '-ai-', parameters('regions')[copyIndex()])]",
+          "endpoint": "[concat('https://', parameters('customerName'), '-ai-', parameters('regions')[copyIndex()], '.openai.azure.com/')]"
+        }
+      }
+    },
+    "deployedModels": {
+      "type": "string",
+      "value": "gpt-5.4, gpt-5.4-mini, gpt-5.4-nano, gpt-image-1.5, text-embedding-3-large"
+    }
+  }
+}
